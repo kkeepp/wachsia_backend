@@ -1,18 +1,29 @@
-import express, { json } from 'express';
-import router from './routes/users.js';
+import 'dotenv/config';
+import app from './app.js';
+import logger from './logger.js';
+import { testConnection, closePool } from './db_config/db_manager.js';
 
-const app = express();
+const PORT = process.env.PORT || 8091;
+let server;
 
-app.use(json());
+async function start() {
+  await testConnection();
+  server = app.listen(PORT, () => {
+    logger.info('Server listening on port %d', PORT);
+  });
+}
 
-app.use('/api/users', router);
+async function shutdown() {
+  logger.info('Shutting down...');
+  server?.close();
+  await closePool();
+  process.exit(0);
+}
 
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
 
-app.get('/', (req, res) => {
-  res.send('API is running...');
-});
-
-const PORT = 8091;
-app.listen(PORT, () => {
-  console.log(`Server is purring on port ${PORT}`);
+start().catch((err) => {
+  logger.fatal(err, 'Failed to start server');
+  process.exit(1);
 });

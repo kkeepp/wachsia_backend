@@ -1,32 +1,45 @@
-import mysql from 'mysql2/promise'; // Use the promise wrapper
-import dotenv from 'dotenv';
+import mysql from 'mysql2/promise';
+import logger from '../logger.js';
 
-dotenv.config();
+let pool;
 
-// Create a connection pool (better for performance than a single connection)
-const pool = mysql.createPool({
-  host: 'localhost',
-  port: 3308,
-  user: 'wachsiausr',
-  password: 'E9rJ3W7N',
-  database: 'wachsia_app',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
-async function testConnection() {
-  try {
-    const connection = await pool.getConnection();
-    console.log('✅ Connected to MySQL successfully on port 3308!');
-    connection.release();
-  } catch (err) {
-    console.error('❌ Database connection failed:', err.message);
+function getPool() {
+  if (!pool) {
+    pool = mysql.createPool({
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      waitForConnections: true,
+      connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+      queueLimit: 0,
+    });
   }
+  return pool;
 }
 
-testConnection();
+export async function testConnection() {
+  const connection = await getPool().getConnection();
+  logger.info('Connected to MySQL on port %d', Number(process.env.DB_PORT));
+  connection.release();
+}
+
+export async function healthCheck() {
+  const connection = await getPool().getConnection();
+  await connection.ping();
+  connection.release();
+  return true;
+}
 
 export function query(sql, params) {
-  return pool.execute(sql, params);
+  return getPool().execute(sql, params);
+}
+
+export async function closePool() {
+  if (pool) {
+    await pool.end();
+    pool = null;
+    logger.info('Database pool closed');
+  }
 }
