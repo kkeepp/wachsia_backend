@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+.env
+.env.*
+.git
+.gitignore
+docker
+analysis
+tests
+vitest.config.js
+*.md
+.idea
