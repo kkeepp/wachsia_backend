@@ -89,6 +89,6 @@ CREATE TABLE IF NOT EXISTS comment
     FOREIGN KEY (commu_id) REFERENCES community (community_id)
 );
 
--- Seed data
+-- Seed data (password: 123456, hashed with bcrypt 10 rounds)
 INSERT INTO user (id, username, email, password, image)
-VALUES (0, 'admin', 'admin@wachsia.app', 'admin', 'https://i.imgur.com/d2OWxrx.jpeg');
+VALUES (0, 'admin', 'admin@wachsia.app', '$2b$10$AIPGPyr6wGLRij4RT5sR4.KuZuQE3CBNVUZkX5GzKdMvZS5PiV3Ea', 'https://i.imgur.com/d2OWxrx.jpeg');

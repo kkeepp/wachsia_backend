@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { findAllUser as fetchAllUsers, findByEmail, findByUsername, userExists, verifyPassword, save, updatePassword, deleteByEmail } from '../services/user_service.js';
+import { findAllUser as fetchAllUsers, findByEmail, findByUsername, userExists, verifyPassword, save, updatePassword, updateUsername, updateImage, deleteByEmail } from '../services/user_service.js';
 import { createTree } from '../services/tree_service.js';
 import { ok, fail } from '../middleware/response.js';
 
@@ -21,6 +21,10 @@ const changePasswordSchema = z.object({
   email: z.email(),
   currentPassword: z.string().min(1),
   newPassword: z.string().min(6),
+});
+const changeUsernameSchema = z.object({
+  email: z.email(),
+  newUsername: z.string().min(1),
 });
 const deleteAccountSchema = z.object({
   email: z.email(),
@@ -108,6 +112,31 @@ export async function changePassword(req, res, next) {
     return ok(res, { updated: true });
   } catch (error) {
     if (error instanceof z.ZodError) return fail(res, 'Email, current password and new password (min 6 chars) are required');
+    next(error);
+  }
+}
+
+export async function changeUsername(req, res, next) {
+  try {
+    const { email, newUsername } = changeUsernameSchema.parse(req.body);
+    const updated = await updateUsername(email, newUsername);
+    if (!updated) return fail(res, 'User not found');
+    return ok(res, { updated: true });
+  } catch (error) {
+    if (error instanceof z.ZodError) return fail(res, 'Email and new username are required');
+    next(error);
+  }
+}
+
+export async function uploadImage(req, res, next) {
+  try {
+    const email = req.body.email;
+    if (!email || !req.file) return fail(res, 'Email and image file are required');
+    const imageUrl = `/uploads/${req.file.filename}`;
+    const updated = await updateImage(email, imageUrl);
+    if (!updated) return fail(res, 'User not found');
+    return ok(res, { imageUrl });
+  } catch (error) {
     next(error);
   }
 }
