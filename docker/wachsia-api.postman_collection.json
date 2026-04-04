@@ -1,43 +1,41 @@
 {
   "info": {
-    "_postman_id": "ebe007b4-9fa6-4c5c-84fd-341559d7e218",
     "name": "wachsia-api",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "9889663"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "health",
+      "item": [
+        {
+          "name": "healthCheck",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/health",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
     {
       "name": "user",
       "item": [
         {
           "name": "findAllUsers",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "accessToken",
-                "value": "pdmAPI",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"programCode\": \"TB001-02\",\r\n    \"exportType\": \"pdm\",\r\n    \"destinationTopic\": \"pdm.batchprocess.converter.topic\",\r\n    \"destinationKey\": \"test_splitter2\",\r\n    \"isSendMessage\": \"true\"\r\n}"
-            },
+            "header": [],
             "url": {
               "raw": "localhost:8091/api/users/findAllUsers",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "findAllUsers"
-              ]
+              "path": ["api", "users", "findAllUsers"]
             }
           },
           "response": []
@@ -48,22 +46,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "localhost:8091/api/users/findByEmail?email=exmple@domain.com",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8091/api/users/findByEmail?email=admin@wachsia.app",
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "findByEmail"
-              ],
-              "query": [
-                {
-                  "key": "email",
-                  "value": "exmple@domain.com"
-                }
-              ]
+              "path": ["api", "users", "findByEmail"],
+              "query": [{ "key": "email", "value": "admin@wachsia.app" }]
             }
           },
           "response": []
@@ -75,21 +62,10 @@
             "header": [],
             "url": {
               "raw": "localhost:8091/api/users/findByUsername?username=admin",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "findByUsername"
-              ],
-              "query": [
-                {
-                  "key": "username",
-                  "value": "admin"
-                }
-              ]
+              "path": ["api", "users", "findByUsername"],
+              "query": [{ "key": "username", "value": "admin" }]
             }
           },
           "response": []
@@ -100,51 +76,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "localhost:8091/api/users/exists?email=exmple@domain.com",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8091/api/users/exists?email=admin@wachsia.app",
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "exists"
-              ],
-              "query": [
-                {
-                  "key": "email",
-                  "value": "exmple@domain.com"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "verifyPassword",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"eamil\": \"add\",\r\n    \"password\": \"password\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "localhost:8091/api/users/verifyPassword",
-              "host": [
-                "localhost"
-              ],
-              "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "verifyPassword"
-              ]
+              "path": ["api", "users", "exists"],
+              "query": [{ "key": "email", "value": "admin@wachsia.app" }]
             }
           },
           "response": []
@@ -156,24 +92,54 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"username\": \"johndoe\",\r\n    \"email\": \"john@example.com\",\r\n    \"password\": \"secret123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"username\": \"johndoe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"secret123\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "localhost:8091/api/users/register",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "register"
+              "path": ["api", "users", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verifyPassword",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@wachsia.app\",\n    \"password\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "localhost:8091/api/users/verifyPassword",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "users", "verifyPassword"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "uploadImage",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "email", "value": "admin@wachsia.app", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
               ]
+            },
+            "url": {
+              "raw": "localhost:8091/api/users/uploadImage",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "users", "uploadImage"]
             }
           },
           "response": []
@@ -185,24 +151,33 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\": \"john@example.com\",\r\n    \"currentPassword\": \"secret123\",\r\n    \"newPassword\": \"newpass123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"email\": \"john@example.com\",\n    \"currentPassword\": \"secret123\",\n    \"newPassword\": \"newpass123\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "localhost:8091/api/users/changePassword",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "changePassword"
-              ]
+              "path": ["api", "users", "changePassword"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "changeUsername",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"john@example.com\",\n    \"newUsername\": \"johnnew\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "localhost:8091/api/users/changeUsername",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "users", "changeUsername"]
             }
           },
           "response": []
@@ -214,24 +189,14 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\": \"john@example.com\",\r\n    \"password\": \"newpass123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"newpass123\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "localhost:8091/api/users/deleteAccount",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "users",
-                "deleteAccount"
-              ]
+              "path": ["api", "users", "deleteAccount"]
             }
           },
           "response": []
@@ -247,22 +212,210 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "localhost:8091/api/trees/level?userId=2",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8091/api/trees/level?userId=1",
+              "host": ["localhost"],
               "port": "8091",
-              "path": [
-                "api",
-                "trees",
-                "level"
-              ],
+              "path": ["api", "trees", "level"],
+              "query": [{ "key": "userId", "value": "1" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ranking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/api/trees/ranking",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "trees", "ranking"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "addExp",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": 1,\n    \"amount\": 50\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "localhost:8091/api/trees/addExp",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "trees", "addExp"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "user-quest",
+      "item": [
+        {
+          "name": "findByUser",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/api/user-quests/findByUser?userId=1",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "user-quests", "findByUser"],
+              "query": [{ "key": "userId", "value": "1" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "findById",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/api/user-quests/findById?userQuestId=1",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "user-quests", "findById"],
+              "query": [{ "key": "userQuestId", "value": "1" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateProgress",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userQuestId\": 1,\n    \"count\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "localhost:8091/api/user-quests/updateProgress",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "user-quests", "updateProgress"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "claimReward",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userQuestId\": 1,\n    \"userId\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "localhost:8091/api/user-quests/claimReward",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "user-quests", "claimReward"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "scan-history",
+      "item": [
+        {
+          "name": "product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/api/scan-history/product?barcode=8997240600041",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "scan-history", "product"],
+              "query": [{ "key": "barcode", "value": "8997240600041" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/api/scan-history/history?userId=1",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "scan-history", "history"],
+              "query": [{ "key": "userId", "value": "1" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "monthly",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/api/scan-history/monthly?userId=1&year=2025&month=6",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "scan-history", "monthly"],
               "query": [
-                {
-                  "key": "userId",
-                  "value": "2"
-                }
+                { "key": "userId", "value": "1" },
+                { "key": "year", "value": "2025" },
+                { "key": "month", "value": "6" }
               ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "daily",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8091/api/scan-history/daily?userId=1&year=2025&month=6&day=15",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "scan-history", "daily"],
+              "query": [
+                { "key": "userId", "value": "1" },
+                { "key": "year", "value": "2025" },
+                { "key": "month", "value": "6" },
+                { "key": "day", "value": "15" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "scan",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": 1,\n    \"barcode\": \"8997240600041\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "localhost:8091/api/scan-history/scan",
+              "host": ["localhost"],
+              "port": "8091",
+              "path": ["api", "scan-history", "scan"]
             }
           },
           "response": []

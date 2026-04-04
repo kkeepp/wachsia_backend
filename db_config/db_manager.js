@@ -14,6 +14,7 @@ function getPool() {
       waitForConnections: true,
       connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
       queueLimit: 0,
+      charset: 'utf8mb4',
     });
   }
   return pool;

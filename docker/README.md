@@ -56,7 +56,7 @@ DB_CONNECTION_LIMIT=10
 
 ```bash
 cd docker
-docker compose --env-file ../.env up -d
+docker compose --env-file ../.env up -d --build
 ```
 
 คำสั่งนี้จะ:
@@ -64,6 +64,8 @@ docker compose --env-file ../.env up -d
 - รัน `init.sql` สร้างตารางและ DB users
 - Build และเริ่ม backend บน port 8091
 - Backend จะรอจนกว่า DB healthcheck ผ่านก่อนเริ่มทำงาน
+
+> **สำคัญ:** ใช้ `--build` ทุกครั้งที่แก้ไข code เพื่อให้ Docker build image ใหม่ หากยังได้ code เก่าให้ใช้ `docker compose --env-file ../.env build --no-cache` ก่อน
 
 ### 3. ตรวจสอบสถานะ
 
@@ -84,14 +86,14 @@ curl http://localhost:8091/health
 
 | คำสั่ง | คำอธิบาย |
 |--------|----------|
-| `docker compose --env-file ../.env up -d` | เริ่มต้น services (background) |
+| `docker compose --env-file ../.env up -d --build` | Build image ใหม่และเริ่มต้น |
 | `docker compose --env-file ../.env down` | หยุดและลบ containers |
 | `docker compose --env-file ../.env stop` | หยุด containers (ไม่ลบ) |
 | `docker compose --env-file ../.env start` | เริ่ม containers ที่หยุดไว้ |
 | `docker compose --env-file ../.env restart` | รีสตาร์ท containers |
 | `docker compose --env-file ../.env ps` | ดูสถานะ containers |
 | `docker compose --env-file ../.env logs -f` | ดู logs แบบ real-time |
-| `docker compose --env-file ../.env up -d --build` | Build image ใหม่และเริ่มต้น |
+| `docker compose --env-file ../.env build --no-cache` | Force rebuild โดยไม่ใช้ cache |
 
 ### เชื่อมต่อ MySQL
 
@@ -113,20 +115,19 @@ docker exec -i wachsia_db mysql -uroot -p wachsia_app < backup.sql
 
 ```bash
 docker compose --env-file ../.env down -v
-docker compose --env-file ../.env up -d
+docker compose --env-file ../.env up -d --build
 ```
 
 ## 📊 โครงสร้างฐานข้อมูล
 
 | ตาราง | คำอธิบาย | คอลัมน์หลัก |
 |-------|----------|-------------|
-| user | ข้อมูลผู้ใช้ | id, username, point, email, password, image |
-| community | ชุมชน | community_id, community_name, member_id |
-| tree | ต้นไม้ของผู้ใช้ | tree_id, owner_id, level, experience |
-| quest | ภารกิจ | quest_id, eco_point, instruction, progress, due, type, owner_id |
-| scannedProduct | ประวัติสแกนสินค้า | scanner_id, product_name, scan_date, image, eco_score, eco_point |
-| post | โพสต์ในชุมชน | post_id, poster_id, commu_id, post_date, caption, image |
-| comment | ความคิดเห็น | comment_id, commentor_id, post_id, commu_id, caption |
+| user | ข้อมูลผู้ใช้ | id, username, point, email, password, image, used_point_today, last_action_date |
+| tree | ต้นไม้ของผู้ใช้ | id, user_id, level, experience, tree_growth, tree_phase |
+| quest | เทมเพลตภารกิจ | id, quest_type (daily/challenge), instruction, reward, max |
+| user_quest | ภารกิจของผู้ใช้ | id, quest_id, status, count, user_id, assign_date |
+| product | ข้อมูลสินค้า | barcode, product_name, image, eco_grade, eco_point |
+| scan_history | ประวัติสแกนสินค้า | id, user_id, barcode, scanned_date |
 
 ### DB Users
 
@@ -138,30 +139,53 @@ docker compose --env-file ../.env up -d
 
 ## 🌐 API Endpoints
 
-### User APIs — `/api/users/`
-
-| Method | Endpoint | คำอธิบาย |
-|--------|----------|----------|
-| GET | `/findAllUsers` | ดึงข้อมูลผู้ใช้ทั้งหมด |
-| GET | `/findByEmail?email=` | ค้นหาผู้ใช้จาก email |
-| GET | `/findByUsername?username=` | ค้นหาผู้ใช้จาก username |
-| GET | `/exists?email=` | ตรวจสอบว่า email มีอยู่ในระบบ |
-| POST | `/register` | ลงทะเบียนผู้ใช้ใหม่ |
-| POST | `/verifyPassword` | ตรวจสอบรหัสผ่าน |
-| PUT | `/changePassword` | เปลี่ยนรหัสผ่าน |
-| DELETE | `/deleteAccount` | ลบบัญชีผู้ใช้ |
-
-### Tree APIs — `/api/trees/`
-
-| Method | Endpoint | คำอธิบาย |
-|--------|----------|----------|
-| GET | `/level?userId=` | ดึงข้อมูล level ต้นไม้ของผู้ใช้ |
-
 ### Health Check
 
 | Method | Endpoint | คำอธิบาย |
 |--------|----------|----------|
 | GET | `/health` | ตรวจสอบสถานะ backend + DB |
+
+### User APIs — `/api/users/`
+
+| Method | Endpoint | คำอธิบาย |
+|--------|----------|----------|
+| GET | `/findAllUsers` | ดึงข้อมูลผู้ใช้ทั้งหมด |
+| GET | `/findByEmail?email=` | ค้นหาจาก email |
+| GET | `/findByUsername?username=` | ค้นหาจาก username |
+| GET | `/exists?email=` | ตรวจสอบ email ซ้ำ |
+| POST | `/register` | ลงทะเบียน (สร้าง tree + assign quests อัตโนมัติ) |
+| POST | `/verifyPassword` | ตรวจสอบรหัสผ่าน |
+| POST | `/uploadImage` | อัพโหลดรูปโปรไฟล์ |
+| PUT | `/changePassword` | เปลี่ยนรหัสผ่าน |
+| PUT | `/changeUsername` | เปลี่ยน username |
+| DELETE | `/deleteAccount` | ลบบัญชี |
+
+### Tree APIs — `/api/trees/`
+
+| Method | Endpoint | คำอธิบาย |
+|--------|----------|----------|
+| GET | `/level?userId=` | ดึงข้อมูลต้นไม้ (level, exp, growth, phase) |
+| GET | `/ranking` | อันดับต้นไม้ทั้งหมด |
+| POST | `/addExp` | เพิ่ม exp ต้นไม้ (ใช้ point, จำกัด 500/วัน) |
+
+### User Quest APIs — `/api/user-quests/`
+
+| Method | Endpoint | คำอธิบาย |
+|--------|----------|----------|
+| GET | `/findByUser?userId=` | ดึง quests ทั้งหมดของ user |
+| GET | `/findById?userQuestId=` | ดึง quest ตาม ID |
+| PUT | `/updateProgress` | อัพเดท progress (count) |
+| POST | `/claimReward` | เคลม reward เมื่อ quest สำเร็จ |
+
+### Scan History APIs — `/api/scan-history/`
+
+| Method | Endpoint | คำอธิบาย |
+|--------|----------|----------|
+| GET | `/product?barcode=` | ค้นหาสินค้าจาก barcode |
+| GET | `/history?userId=` | ประวัติการสแกนทั้งหมด |
+| GET | `/monthly?userId=&year=&month=` | สรุปรายเดือน |
+| GET | `/daily?userId=&year=&month=&day=` | รายละเอียดรายวัน |
+| POST | `/scan` | สแกนสินค้า (บันทึก + เพิ่ม point) |
 
 ## 🧪 การทดสอบ API ด้วย Postman
 
@@ -180,24 +204,38 @@ docker compose --env-file ../.env up -d
 }
 ```
 
-**Change Password** — `PUT /api/users/changePassword`
+**Add Exp** — `POST /api/trees/addExp`
 ```json
 {
-  "email": "john@example.com",
-  "currentPassword": "secret123",
-  "newPassword": "newpass123"
+  "userId": 1,
+  "amount": 50
 }
 ```
 
-**Delete Account** — `DELETE /api/users/deleteAccount`
+**Update Quest Progress** — `PUT /api/user-quests/updateProgress`
 ```json
 {
-  "email": "john@example.com",
-  "password": "newpass123"
+  "userQuestId": 1,
+  "count": 1
+}
+```
+
+**Scan Product** — `POST /api/scan-history/scan`
+```json
+{
+  "userId": 1,
+  "barcode": "8997240600041"
 }
 ```
 
 ## 🛠️ การแก้ไขปัญหา
+
+### Build แล้วยังได้ code เก่า
+
+```bash
+docker compose --env-file ../.env build --no-cache
+docker compose --env-file ../.env up -d
+```
 
 ### Port 3306 ถูกใช้งานอยู่
 
@@ -211,7 +249,7 @@ DB_PORT=3307
 ```bash
 docker compose --env-file ../.env logs db
 docker compose --env-file ../.env logs wachsia_backend
-docker compose --env-file ../.env down -v && docker compose --env-file ../.env up -d
+docker compose --env-file ../.env down -v && docker compose --env-file ../.env up -d --build
 ```
 
 ### เชื่อมต่อ DB ไม่ได้
@@ -238,6 +276,6 @@ SHOW VARIABLES LIKE 'char%';
 
 ---
 
-**Backend:** Node.js 20 (Alpine) + Express 5  
-**Database:** MySQL 8.0  
+**Backend:** Node.js 20 (Alpine) + Express 5
+**Database:** MySQL 8.0
 **Port:** 8091 (Backend) / 3306 (MySQL)

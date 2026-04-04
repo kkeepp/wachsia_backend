@@ -14,7 +14,7 @@ export async function getTreeLevel(req, res, next) {
     const userId = userIdParam.parse(req.query.userId);
     const tree = await getTreeByUserId(userId);
     if (!tree) return fail(res, 'Tree not found');
-    return ok(res, { level: tree.level, experience: tree.experience });
+    return ok(res, tree);
   } catch (error) {
     if (error instanceof z.ZodError) return fail(res, 'Valid user ID is required');
     next(error);
@@ -35,8 +35,7 @@ export async function addExp(req, res, next) {
 
 export async function ranking(req, res, next) {
   try {
-    const data = await getRanking();
-    return ok(res, data);
+    return ok(res, await getRanking());
   } catch (error) {
     next(error);
   }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { findAllUser as fetchAllUsers, findByEmail, findByUsername, userExists, verifyPassword, save, updatePassword, updateUsername, updateImage, deleteByEmail } from '../services/user_service.js';
 import { createTree } from '../services/tree_service.js';
+import { assignDefaultQuests } from '../services/user_quest_service.js';
 import { ok, fail } from '../middleware/response.js';
 
 const emailParam = z.email();
@@ -95,6 +96,7 @@ export async function register(req, res, next) {
     if (exists) return fail(res, 'Email already registered');
     const user = await save(username, email, password);
     await createTree(user.id);
+    await assignDefaultQuests(user.id);
     return ok(res, user);
   } catch (error) {
     if (error instanceof z.ZodError) return fail(res, error.issues.map(i => i.message));

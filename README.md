@@ -1,6 +1,6 @@
 # Wachsia Backend
 
-REST API backend สำหรับแอปพลิเคชัน Wachsia — ระบบ eco-friendly community ที่รองรับการจัดการผู้ใช้, ต้นไม้, ภารกิจ, และชุมชน
+REST API backend สำหรับแอปพลิเคชัน Wachsia — ระบบ eco-friendly community ที่รองรับการจัดการผู้ใช้, ต้นไม้, ภารกิจ, และการสแกนสินค้า
 
 ## Tech Stack
 
@@ -81,16 +81,39 @@ GET /health
 | GET | `/findByEmail?email=` | ค้นหาจาก email |
 | GET | `/findByUsername?username=` | ค้นหาจาก username |
 | GET | `/exists?email=` | ตรวจสอบ email ซ้ำ |
-| POST | `/register` | ลงทะเบียน |
+| POST | `/register` | ลงทะเบียน (สร้าง tree + assign quests อัตโนมัติ) |
 | POST | `/verifyPassword` | ตรวจสอบรหัสผ่าน |
+| POST | `/uploadImage` | อัพโหลดรูปโปรไฟล์ |
 | PUT | `/changePassword` | เปลี่ยนรหัสผ่าน |
+| PUT | `/changeUsername` | เปลี่ยน username |
 | DELETE | `/deleteAccount` | ลบบัญชี |
 
 ### Tree APIs — `/api/trees/`
 
 | Method | Endpoint | คำอธิบาย |
 |--------|----------|----------|
-| GET | `/level?userId=` | ดึง level ต้นไม้ |
+| GET | `/level?userId=` | ดึงข้อมูลต้นไม้ (level, exp, growth, phase) |
+| GET | `/ranking` | อันดับต้นไม้ทั้งหมด |
+| POST | `/addExp` | เพิ่ม exp ต้นไม้ (ใช้ point, จำกัด 500/วัน) |
+
+### User Quest APIs — `/api/user-quests/`
+
+| Method | Endpoint | คำอธิบาย |
+|--------|----------|----------|
+| GET | `/findByUser?userId=` | ดึง quests ทั้งหมดของ user |
+| GET | `/findById?userQuestId=` | ดึง quest ตาม ID |
+| PUT | `/updateProgress` | อัพเดท progress (count) |
+| POST | `/claimReward` | เคลม reward เมื่อ quest สำเร็จ |
+
+### Scan History APIs — `/api/scan-history/`
+
+| Method | Endpoint | คำอธิบาย |
+|--------|----------|----------|
+| GET | `/product?barcode=` | ค้นหาสินค้าจาก barcode |
+| GET | `/history?userId=` | ประวัติการสแกนทั้งหมด |
+| GET | `/monthly?userId=&year=&month=` | สรุปรายเดือน |
+| GET | `/daily?userId=&year=&month=&day=` | รายละเอียดรายวัน |
+| POST | `/scan` | สแกนสินค้า (บันทึก + เพิ่ม point) |
 
 ## Testing
 

@@ -7,11 +7,8 @@ import pinoHttp from 'pino-http';
 import logger from './logger.js';
 import userRouter from './routes/users.js';
 import treeRouter from './routes/trees.js';
-import scannedProductRouter from './routes/scanned_products.js';
-import communityRouter from './routes/communities.js';
-import postRouter from './routes/posts.js';
-import commentRouter from './routes/comments.js';
-import questRouter from './routes/quests.js';
+import scanHistoryRouter from './routes/scan_history.js';
+import userQuestRouter from './routes/user_quests.js';
 import { errorHandler, notFoundHandler } from './middleware/error_handler.js';
 import { healthCheck } from './db_config/db_manager.js';
 
@@ -36,11 +33,8 @@ app.get('/health', async (req, res) => {
 
 app.use('/api/users', userRouter);
 app.use('/api/trees', treeRouter);
-app.use('/api/scanned-products', scannedProductRouter);
-app.use('/api/communities', communityRouter);
-app.use('/api/posts', postRouter);
-app.use('/api/comments', commentRouter);
-app.use('/api/quests', questRouter);
+app.use('/api/scan-history', scanHistoryRouter);
+app.use('/api/user-quests', userQuestRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
