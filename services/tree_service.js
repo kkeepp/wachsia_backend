@@ -41,7 +41,7 @@ export async function addExperience(userId, amount) {
   const { point, used_point_today } = freshUser[0];
 
   if (point < amount) return { error: 'Not enough points' };
-  if (used_point_today + amount > 500) return { error: 'Daily limit exceeded' };
+  if (used_point_today + amount > 1500) return { error: 'Daily limit exceeded' };
 
   const tree = await getTreeByUserId(userId);
   if (!tree) return { error: 'Tree not found' };
