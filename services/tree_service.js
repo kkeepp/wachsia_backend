@@ -41,7 +41,7 @@ export async function addExperience(userId, amount) {
   const { point, used_point_today } = freshUser[0];
 
   if (point < amount) return { error: 'Not enough points' };
-  if (used_point_today + amount > 1500) return { error: 'Daily limit exceeded' };
+  if (used_point_today >= 1500) return { error: 'Daily limit exceeded' };
 
   const tree = await getTreeByUserId(userId);
   if (!tree) return { error: 'Tree not found' };
@@ -52,12 +52,23 @@ export async function addExperience(userId, amount) {
   );
 
   let { level, experience } = tree;
+
+  if (level > 5 || (level === 5 && experience >= 500)) {
+    return { error: 'Tree is already at max level' };
+  }
+
   experience += amount;
   let expToNextLevel = level * 100;
-  while (experience >= expToNextLevel) {
+
+  while (experience >= expToNextLevel && level < 5) {
     experience -= expToNextLevel;
     level += 1;
     expToNextLevel = level * 100;
+  }
+
+  if (level >= 5 && experience >= 500) {
+    level = 5;
+    experience = 500;
   }
 
   await query('UPDATE tree SET level = ?, experience = ? WHERE user_id = ?', [level, experience, userId]);
